@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.local
+*.local
+infra/local-supabase/.env
+coverage/
+playwright-report/
+test-results/
+# Flutter
+apps/mobile/.dart_tool/
+apps/mobile/build/
+apps/mobile/.flutter-plugins*
+apps/mobile/android/local.properties
+apps/mobile/android/app/src/main/res/values/maps_api_key.xml
+apps/mobile/ios/Flutter/MapsKey.xcconfig
+.DS_Store

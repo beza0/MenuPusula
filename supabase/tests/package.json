@@ -1,0 +1,14 @@
+{
+  "name": "menu-atlasi-backend-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.49.0",
+    "pg": "^8.13.0",
+    "vitest": "^3.2.0",
+    "dotenv": "^16.4.0"
+  }
+}
