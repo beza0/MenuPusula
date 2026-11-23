@@ -1,6 +1,6 @@
 // Kabul kriterleri 1, 3, 4, 5, 7, 8, 11 — yayın durumları ve yetki sınırları
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { anon, createReadyBusiness, createUser, db, makeAdmin, must, publish } from './helpers.js';
+import { anon, createReadyBusiness, createUser, db, makeAdmin, must, publish, uniq } from './helpers.js';
 
 let owner, other, admin, visitor;
 
@@ -37,7 +37,8 @@ describe('işletme oluşturma ve yayın durumu', () => {
   });
 
   it('onaylanmadan herkese açık sonuçlarda görünmez; onaydan sonra görünür', async () => {
-    const { business } = await createReadyBusiness(owner, { name: 'Görünmez Kafe Testi' });
+    const name = `Görünmez Kafe ${uniq('t')}`;
+    const { business } = await createReadyBusiness(owner, { name });
 
     const before = await visitor.from('businesses').select('id').eq('id', business.id);
     expect(before.data).toEqual([]);
@@ -45,7 +46,7 @@ describe('işletme oluşturma ve yayın durumu', () => {
     expect(pub0.data).toBeNull();
 
     await must(owner.client.rpc('submit_business_for_review', { p_business_id: business.id }));
-    const pending = await visitor.rpc('search_businesses', { p_query: 'Görünmez Kafe Testi' });
+    const pending = await visitor.rpc('search_businesses', { p_query: name });
     expect(pending.data).toEqual([]);
 
     // Sahip kendi başvurusunu onaylayamaz
@@ -54,11 +55,11 @@ describe('işletme oluşturma ve yayın durumu', () => {
 
     await must(admin.client.rpc('admin_review_business', { p_business_id: business.id, p_approve: true }));
 
-    const after = await visitor.rpc('search_businesses', { p_query: 'görünmez kafe testi' });
+    const after = await visitor.rpc('search_businesses', { p_query: name.toLocaleLowerCase('tr') });
     expect(after.data.map((r) => r.id)).toContain(business.id);
     expect(after.data[0].is_verified).toBe(false); // onay ≠ doğrulanmış rozeti
     const pub = await visitor.rpc('get_public_business', { p_ref: business.public_id });
-    expect(pub.data.name).toBe('Görünmez Kafe Testi');
+    expect(pub.data.name).toBe(name);
     expect(pub.data.categories[0].items[0]).toMatchObject({ name: 'Latte', price_cents: 9500 });
 
     const { data: logs } = await admin.client.from('admin_audit_logs').select('*').eq('target_id', business.id);

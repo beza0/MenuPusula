@@ -1,0 +1,41 @@
+@import 'tailwindcss';
+
+/* Varsayılan değerler; çalışma zamanında config/brand.ts üzerinden geçersiz kılınır. */
+@theme {
+  --color-primary: #e8590c;
+  --color-primary-foreground: #ffffff;
+  --color-primary-soft: #fff1e6;
+  --color-background: #fffcf9;
+  --color-foreground: #1c1917;
+  --color-muted: #f5f1ec;
+  --color-muted-foreground: #6b635b;
+  --color-border: #e7e0d8;
+  --color-danger: #c92a2a;
+  --color-success: #2b8a3e;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --radius-lg: 0.75rem;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: 'tnum' 1;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.price {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

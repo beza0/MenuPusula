@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Menü Atlası">
+  <path d="M32 3C19.3 3 9 13.1 9 25.6 9 42.4 32 61 32 61s23-18.6 23-35.4C55 13.1 44.7 3 32 3z" fill="#E8590C"/>
+  <circle cx="32" cy="25" r="14" fill="#FFF"/>
+  <path d="M27 16v8a3 3 0 0 0 2 2.8V35h2v-8.2a3 3 0 0 0 2-2.8v-8h-1.5v7h-1v-7h-1v7h-1v-7H27zm10.5 0c-1.9 0-3 2.6-3 6.2 0 2.4.9 3.9 2 4.5V35h2V16h-1z" fill="#E8590C"/>
+</svg>
