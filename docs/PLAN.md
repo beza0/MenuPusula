@@ -15,15 +15,15 @@ işletme ve ürün keşfettiği uygulama. Ödeme, sipariş, rezervasyon, yorum v
 | Uçtan uca / RLS testleri | Vitest + supabase-js, Playwright | `supabase/tests/`, `apps/business-web/e2e/` |
 
 ## Görev listesi (dikey dilimler)
-1. [ ] Şema + RLS + RPC'ler + storage politikaları (migration)
-2. [ ] Yerel Supabase yığını ve backend testleri (RLS, yayın durumu, fiyat hesabı, arama, saatler)
-3. [ ] Web panel: kayıt/giriş → işletme oluşturma → menü → incelemeye gönderme
-4. [ ] Yönetim paneli: onay/red/askı, bildirimler, audit log
-5. [ ] Herkese açık QR menü sayfası + QR indirme (PNG/SVG)
-6. [ ] Mobil: keşfet (harita/liste), işletme detay, menü, ürün arama, favoriler, profil
-7. [ ] İstatistikler (gerçek olay kaydı)
-8. [ ] Hesap silme (Edge Function) ve politikası
-9. [ ] Uçtan uca doğrulama, README, eksik yapılandırma listesi
-10. [ ] İkinci aşama: AI ile menü aktarma (sağlayıcı arayüzü, taslak önizleme)
+1. [x] Şema + RLS + RPC'ler + storage politikaları (migration)
+2. [x] Yerel Supabase yığını ve backend testleri (RLS, yayın durumu, fiyat hesabı, arama, saatler)
+3. [x] Web panel: kayıt/giriş → işletme oluşturma → menü → incelemeye gönderme
+4. [x] Yönetim paneli: onay/red/askı, bildirimler, audit log
+5. [x] Herkese açık QR menü sayfası + QR indirme (PNG/SVG)
+6. [x] Mobil: keşfet (harita/liste), işletme detay, menü, ürün arama, favoriler, profil
+7. [x] İstatistikler (gerçek olay kaydı)
+8. [x] Hesap silme (Edge Function) ve politikası
+9. [x] Uçtan uca doğrulama, README, eksik yapılandırma listesi
+10. [x] İkinci aşama: AI ile menü aktarma (sağlayıcı arayüzü, taslak önizleme)
 
 Kararlar ve gerekçeleri: `docs/DECISIONS.md`.
