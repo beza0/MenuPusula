@@ -17,6 +17,12 @@ for svc in db auth storage; do
 done
 bash scripts/migrate.sh "${1:-}"
 set -a; source .env; set +a
+# Web panelinin yerel ayar dosyası (yoksa oluşturulur)
+WEB_ENV="$HERE/../../apps/business-web/.env.local"
+if [[ ! -f "$WEB_ENV" ]]; then
+  printf 'VITE_SUPABASE_URL=http://localhost:%s\nVITE_SUPABASE_ANON_KEY=%s\nVITE_PUBLIC_MENU_BASE_URL=\n' "${API_PORT}" "${ANON_KEY}" > "$WEB_ENV"
+  echo "Web ayarları yazıldı: apps/business-web/.env.local"
+fi
 echo
 echo "API:      http://localhost:${API_PORT}"
 echo "Mailpit:  http://localhost:${MAILPIT_PORT}"
