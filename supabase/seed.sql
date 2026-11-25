@@ -85,12 +85,16 @@ select b, d, o::time, c::time from (values
 ) h(b, o, c), generate_series(1, 7) d
 on conflict do nothing;
 
--- Menüler
+-- Menüler (tekrar çalıştırılırsa kopya oluşturmaz)
 do $$
 declare
   v_cat uuid;
   v_item uuid;
 begin
+  if exists (select 1 from public.menu_categories where business_id = 'a0000000-0000-4000-8000-000000000001') then
+    raise notice 'Örnek menüler zaten yüklü, atlanıyor';
+    return;
+  end if;
   -- Moda Kahvecisi
   insert into public.menu_categories (business_id, name, sort_order) values ('a0000000-0000-4000-8000-000000000001', 'Kahveler', 0) returning id into v_cat;
   insert into public.menu_items (business_id, category_id, name, description, price_cents, sort_order)

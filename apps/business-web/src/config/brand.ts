@@ -20,6 +20,7 @@ export const brand = {
     danger: '#C92A2A',
     success: '#2B8A3E',
   },
+  /** Gizlilik sayfasında gösterilen iletişim adresi — yayına almadan önce gerçek adresle değiştirin. */
   supportEmail: 'destek@menuatlasi.example',
 } as const;
 

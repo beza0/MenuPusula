@@ -15,10 +15,8 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        // Uygulama kimliği: mağazaya göndermeden önce kendi alan adınıza göre değiştirin.
         applicationId = "com.menuatlasi.menu_atlasi"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = maxOf(flutter.minSdkVersion, 21)
         // Google Maps anahtarı: android/local.properties içinde MAPS_API_KEY=... (git'e girmez)
         val localProps = java.util.Properties().apply {
@@ -37,7 +35,7 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
+            // Mağaza sürümü için kendi imzalama yapılandırmanızı ekleyin (şu an debug anahtarıyla imzalanır).
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }

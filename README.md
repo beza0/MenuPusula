@@ -1,91 +1,188 @@
 # Menü Atlası
 
-Restoran ve kafelerin menülerini yayınladığı; kullanıcıların harita/liste üzerinden işletmeleri ve ürünleri
-keşfedip güncel fiyatları görebildiği mobil uygulama + işletme/yönetim paneli + QR menü.
+Restoran ve kafeleri haritada keşfetmeyi, güncel menülerini ve fiyatlarını incelemeyi sağlayan mobil uygulama.
+İşletmeler kendi hesaplarıyla menülerini yönetir, incelemeden sonra yayına alınır ve her işletme için kalıcı bir
+QR menü bağlantısı oluşur.
 
-> Çalışma adı “Menü Atlası”. Ad, logo ve renkler tek yerden değişir:
-> web `apps/business-web/src/config/brand.ts` (+ `public/logo.svg`), mobil `apps/mobile/lib/config/brand.dart`
-> (Android uygulama adı `android/app/src/main/res/values/strings.xml`, iOS `Info.plist` → `CFBundleDisplayName`).
+Proje üç parçadan oluşur ve hepsi aynı Supabase backend'ini kullanır:
 
-## İçerik
+- **Mobil uygulama** (Flutter): işletme ve ürün keşfi, menüler, favoriler
+- **Web paneli** (React): işletme sahipleri için menü yönetimi, yöneticiler için başvuru inceleme
+- **QR menü sayfası** (web): hesap veya uygulama gerektirmeden telefonda açılan menü
 
-| Klasör | Açıklama |
+> **Durum:** Çalışan MVP. Şu an herhangi bir sunucuda yayında değil; bilgisayarınızda Docker ile çalıştırılır
+> (aşağıdaki [Kurulum](#kurulum) bölümü). Yayına alma adımları [docs/CONFIGURATION.md](docs/CONFIGURATION.md) içinde.
+
+## Ekran görüntüleri
+
+| İşletme paneli — menü yönetimi | İşletme paneli — QR menü |
 |---|---|
-| `supabase/migrations` | PostgreSQL + PostGIS şeması, RLS, iş kuralları (RPC), storage politikaları |
-| `supabase/functions` | Edge Functions: `delete-account`, `menu-import` (AI, isteğe bağlı) |
-| `supabase/seed.sql` | **Yalnızca yerel** açıkça etiketlenmiş örnek veri |
-| `supabase/tests` | Gerçek yığına karşı RLS / yayın / fiyat / arama / saat testleri (Vitest) |
-| `apps/business-web` | İşletme paneli, yönetim paneli ve herkese açık QR menü (`/m/:publicId`) |
-| `apps/mobile` | Flutter mobil uygulama (Material 3, Riverpod, go_router) |
-| `infra/local-supabase` | Supabase CLI olmayan ortamlar için Docker Compose yığını |
-| `docs/` | Plan, kararlar, yapılandırma, test sonuçları |
+| ![Menü yönetimi](docs/images/panel-menu.png) | ![QR menü](docs/images/panel-qr.png) |
 
-## Hızlı başlangıç (yerel)
+| Mobil — keşfet | Mobil — işletme ve menü | Mobil — ürün arama | QR menü (telefon tarayıcısı) |
+|---|---|---|---|
+| <img src="docs/images/mobil-kesfet.png" width="200" alt="Keşfet"> | <img src="docs/images/mobil-isletme.png" width="200" alt="İşletme detayı"> | <img src="docs/images/mobil-urun-ara.png" width="200" alt="Ürün arama"> | <img src="docs/images/qr-menu-mobil.png" width="200" alt="QR menü"> |
 
-Gereksinimler: Docker, Node 20+, Flutter 3.38+ (bu repo Flutter 3.50 ile denendi), `psql`.
+Ekran görüntülerindeki işletmeler ve fiyatlar kurgusal örnek veridir.
 
-### 1) Backend
+## Özellikler
 
-**Seçenek A — Supabase CLI**
+### Kullanıcılar (mobil)
+- Harita ve liste görünümü, “Bu bölgede ara” butonu, çok sayıda işaretçi için kümeleme
+- İşletme veya ürün arama; restoran/kafe, mutfak türü, mesafe ve “şu an açık” filtreleri
+- Konum izni vermeden şehir/ilçe seçerek keşif (izin yalnızca “Yakınımda” kullanılınca istenir)
+- Ürün araması: “latte” gibi bir ürünü bölgedeki işletmelerde fiyatlarıyla bulma, bütçe sınırı, fiyata veya mesafeye göre sıralama
+- İşletme sayfası: menü kategorileri, varyantlar (küçük/büyük), tükendi bilgisi, işletmenin beyan ettiği alerjen etiketleri, menü içinde arama, yol tarifi, arama
+- Favoriler, hatalı bilgi bildirme, profil, şifre sıfırlama, hesap silme
+
+### İşletme sahipleri (web paneli)
+- E-posta doğrulamalı kayıt, birden fazla işletme/şube
+- İşletme bilgileri, haritada konum seçme, logo ve kapak görseli (otomatik küçültülür), gece yarısını geçebilen çalışma saatleri ve özel günler
+- Menü: kategori ve ürün ekleme/düzenleme/sıralama, ürün fotoğrafı, varyant fiyatları, gizleme, tükendi işareti
+- Toplu fiyat güncelleme (yüzde veya sabit tutar), uygulamadan önce eski/yeni fiyat önizlemesi
+- “Fiyatları kontrol ettim” kaydı, menü güncelleme tarihinden ayrı tutulur ve ayrı gösterilir
+- Taslak → incelemeye gönder → yayın akışı, yayın öncesi menü önizlemesi
+- Kalıcı QR menü bağlantısı, PNG ve SVG indirme (aynı bağlantı NFC etiketine yazılabilir)
+- Gerçek görüntülemelere dayalı istatistikler (kişisel veri veya konum tutulmaz)
+- İsteğe bağlı: menü fotoğrafı/PDF'inden AI ile aktarma. Sonuçlar taslak olarak gelir; işletme düzeltip onaylamadan menüye hiçbir şey eklenmez
+
+### Yöneticiler (web paneli)
+- Başvuruları menü önizlemesiyle inceleme, onaylama veya gerekçeyle reddetme
+- İşletmeyi askıya alma, gerçek doğrulamadan sonra “Doğrulanmış” rozeti verme
+- Kullanıcı bildirimlerini sonuçlandırma, tüm yönetim işlemlerinin kaydı (audit log)
+
+### Güvenlik
+- Tüm tablolarda Supabase satır düzeyi güvenlik (RLS); kimse başka bir işletmenin verisini değiştiremez
+- Yayın durumu ve doğrulama rozeti yalnızca sunucu fonksiyonlarıyla değişir; işletme sahibi kendi onayını veremez
+- Yönetici yetkisi kullanıcının düzenleyebildiği bilgilerden değil, istemcilerin yazamadığı ayrı bir tablodan gelir
+- Taslak işletmelerin görselleri herkese açık değildir; fiyatlar kuruş cinsinden tam sayı olarak saklanır
+- Bu kuralların hepsi otomatik testlerle doğrulanır ([docs/TESTING.md](docs/TESTING.md))
+
+## Teknolojiler
+
+| Katman | Teknoloji |
+|---|---|
+| Mobil | Flutter, Dart, Material 3, Riverpod, go_router, Google Maps |
+| Web paneli ve QR menü | React, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zod |
+| Backend | Supabase: PostgreSQL + PostGIS, Auth, Storage, Edge Functions |
+| Test | Vitest, Playwright, Flutter test |
+
+## Proje yapısı
+
+| Klasör | İçerik |
+|---|---|
+| `apps/mobile` | Flutter mobil uygulaması |
+| `apps/business-web` | İşletme paneli, yönetim paneli ve QR menü sayfası |
+| `supabase/migrations` | Veritabanı şeması, güvenlik kuralları ve sunucu fonksiyonları |
+| `supabase/functions` | Edge Functions: hesap silme, AI ile menü aktarma |
+| `supabase/seed.sql` | Yalnızca yerel geliştirme için kurgusal örnek veri |
+| `supabase/tests` | Backend testleri (gerçek Supabase'e karşı çalışır) |
+| `infra/local-supabase` | Supabase'i bilgisayarda Docker ile çalıştıran kurulum |
+| `docs` | Kararlar, yapılandırma, test sonuçları |
+
+## Kurulum
+
+Gerekenler: [Docker Desktop](https://www.docker.com/products/docker-desktop/) (açık olmalı), Node.js 20 veya üstü, Git.
+Windows'ta komutları **Git Bash** veya **WSL** içinde çalıştırın.
+
+**1. Kodu indirin**
 ```bash
-supabase start
+git clone https://github.com/beza0/MenuPusula.git
 ```
 ```bash
-supabase db reset
+cd MenuPusula
 ```
-(`db reset` migration'ları ve `seed.sql`'i uygular.) Edge Functions: `supabase functions serve`.
 
-**Seçenek B — Bu repodaki Docker Compose yığını** (CLI yoksa; testler bununla çalıştırıldı)
+**2. Backend'i başlatın** (ilk seferde Docker imajları indirildiği için birkaç dakika sürer)
 ```bash
 bash infra/local-supabase/scripts/up.sh --seed
 ```
-Bu komut rastgele yerel anahtarlar üretir (`infra/local-supabase/.env`, git'e girmez), Postgres/PostGIS, Auth,
-PostgREST, Storage, Edge Runtime ve Mailpit'i başlatır, migration + seed uygular.
-- API: `http://localhost:54321` · Mailpit (doğrulama e-postaları): `http://localhost:54324`
-- Sıfırlama: `bash infra/local-supabase/scripts/reset.sh --seed` · Durdurma: `bash infra/local-supabase/scripts/down.sh`
+Bu komut yerel anahtarları üretir, Supabase'i başlatır, veritabanını kurar, örnek verileri yükler ve web panelinin
+ayar dosyasını oluşturur. Sonunda `Migration tamam.` yazar.
 
-Örnek hesaplar (yalnızca seed ile, şifre `OrnekSifre123!`): `ornek-sahip@menuatlasi.local`,
-`ornek-yonetici@menuatlasi.local`, `ornek-kullanici@menuatlasi.local`.
+**3. Web panelini başlatın**
+```bash
+cd apps/business-web
+```
+```bash
+npm install
+```
+```bash
+npm run dev
+```
 
-### 2) Web paneli + QR menü
-```bash
-cd apps/business-web && cp .env.example .env.local
-```
-`.env.local` içine `VITE_SUPABASE_ANON_KEY` değerini (`infra/local-supabase/.env` → `ANON_KEY`) yazın, sonra:
-```bash
-npm install && npm run dev
-```
-Panel: `http://localhost:5173/panel` · QR menü örneği: `http://localhost:5173/m/ornekmoda1`
+### Denemek için
 
-### 3) Mobil
+| Adres | Ne var |
+|---|---|
+| http://localhost:5173/panel | İşletme ve yönetim paneli |
+| http://localhost:5173/m/ornekmoda1 | Örnek QR menü (giriş gerektirmez) |
+| http://localhost:54324 | Yerel e-posta kutusu (kayıt doğrulama e-postaları buraya düşer) |
+
+Örnek hesaplar (yalnızca yerel örnek veride bulunur, şifre: `OrnekSifre123!`):
+
+| Hesap | Rol |
+|---|---|
+| `ornek-sahip@menuatlasi.local` | Örnek işletmelerin sahibi |
+| `ornek-yonetici@menuatlasi.local` | Yönetici (üst menüde “Yönetim” görünür) |
+| `ornek-kullanici@menuatlasi.local` | Normal kullanıcı |
+
+Durdurmak için:
 ```bash
-cd apps/mobile && cp env/local.example.json env/local.json
+bash infra/local-supabase/scripts/down.sh
 ```
-`env/local.json` içine anon anahtarı yazın (Android emülatöründen bilgisayara `10.0.2.2` ile erişilir), sonra:
+Veritabanını sıfırlamak için:
+```bash
+bash infra/local-supabase/scripts/reset.sh --seed
+```
+
+### Mobil uygulama
+
+[Flutter](https://docs.flutter.dev/get-started/install) gerekir. Backend çalışırken:
+```bash
+cd apps/mobile
+```
+```bash
+cp env/local.example.json env/local.json
+```
+`env/local.json` içindeki `SUPABASE_ANON_KEY` değerini `infra/local-supabase/.env` dosyasındaki `ANON_KEY` ile
+değiştirin (Android emülatörü bilgisayara `10.0.2.2` adresiyle erişir), sonra:
 ```bash
 flutter run --dart-define-from-file=env/local.json
 ```
-Harita anahtarı yoksa uygulama liste görünümüyle açılır ve harita alanında açık bir yapılandırma mesajı gösterir.
-Harita kurulumu: [docs/CONFIGURATION.md](docs/CONFIGURATION.md#google-maps).
+Google Maps anahtarı tanımlanmadıysa uygulama liste görünümüyle açılır ve harita alanında bir yapılandırma mesajı
+gösterir. Anahtar kurulumu: [docs/CONFIGURATION.md](docs/CONFIGURATION.md#google-maps).
 
 ## Testler
+
+Backend çalışırken tüm testler:
 ```bash
 bash scripts/test-all.sh
 ```
-Ayrıntı ve son çalıştırma sonuçları: [docs/TESTING.md](docs/TESTING.md).
+Kapsam ve son sonuçlar: [docs/TESTING.md](docs/TESTING.md).
 
-## İlk yöneticiyi güvenli oluşturma
-Yönetici yetkisi kullanıcı metadata'sından **okunmaz**; yalnızca istemcilerin yazamadığı `public.admin_users`
-tablosundan gelir. Kişi önce normal hesap açar ve e-postasını doğrular; ardından veritabanı sahibi (SQL Editor
-veya `psql`, service bağlantısı) şunu çalıştırır:
+## Yayına alma
+
+Supabase projesi, web panelinin yayınlanması, ilk yöneticinin güvenli oluşturulması, harita ve e-posta ayarları:
+[docs/CONFIGURATION.md](docs/CONFIGURATION.md). Henüz tanımlanmamış harici ayarların listesi de aynı dosyada.
+
+### İlk yönetici
+
+Yönetici yetkisi uygulama içinden verilemez. Kişi önce normal hesap açıp e-postasını doğrular; ardından veritabanı
+sahibi Supabase SQL Editor'de şunu çalıştırır:
 ```sql
 insert into public.admin_users (user_id, note)
-select id, 'İlk yönetici' from auth.users where email = 'yonetici@ornek.com';
+select id, 'İlk yönetici' from auth.users where email = 'yonetici@alanadiniz.com';
 ```
-Bu tabloya API üzerinden (anon/authenticated) yazma yetkisi yoktur; testlerle doğrulanmıştır.
+
+## Marka
+
+Uygulama adı, logo ve renkler tek yerden değişir: web için `apps/business-web/src/config/brand.ts` ve
+`public/logo.svg`, mobil için `apps/mobile/lib/config/brand.dart`.
 
 ## Belgeler
-- [docs/PLAN.md](docs/PLAN.md) — plan ve görev listesi
-- [docs/DECISIONS.md](docs/DECISIONS.md) — teknik kararlar ve gerekçeleri
-- [docs/CONFIGURATION.md](docs/CONFIGURATION.md) — ortam değişkenleri, harita, e-posta, AI, üretim kontrol listesi, eksik harici yapılandırmalar
+
+- [docs/CONFIGURATION.md](docs/CONFIGURATION.md) — ortam değişkenleri, harita, e-posta, AI, yayına alma, eksik ayarlar
 - [docs/TESTING.md](docs/TESTING.md) — test kapsamı ve sonuçları
+- [docs/DECISIONS.md](docs/DECISIONS.md) — teknik kararlar ve gerekçeleri
+- [docs/PLAN.md](docs/PLAN.md) — geliştirme planı

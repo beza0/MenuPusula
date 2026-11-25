@@ -26,4 +26,4 @@ işletme ve ürün keşfettiği uygulama. Ödeme, sipariş, rezervasyon, yorum v
 9. [x] Uçtan uca doğrulama, README, eksik yapılandırma listesi
 10. [x] İkinci aşama: AI ile menü aktarma (sağlayıcı arayüzü, taslak önizleme)
 
-Kararlar ve gerekçeleri: `docs/DECISIONS.md`.
+Kararlar ve gerekçeleri: [DECISIONS.md](DECISIONS.md).

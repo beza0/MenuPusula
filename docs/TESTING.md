@@ -3,7 +3,7 @@
 Tüm testler gerçek bir yerel Supabase yığınına (Postgres 17 + PostGIS, GoTrue Auth, PostgREST, Storage API,
 Edge Runtime, Mailpit; `infra/local-supabase`) karşı çalıştırıldı. Tekrar çalıştırmak için: `bash scripts/test-all.sh`.
 
-## Son çalıştırma (2026-11-23, bu oturumda)
+## Son çalıştırma (2026-11-25)
 
 | Paket | Komut | Sonuç |
 |---|---|---|
@@ -15,7 +15,7 @@ Edge Runtime, Mailpit; `infra/local-supabase`) karşı çalıştırıldı. Tekra
 | Mobil statik analiz | `flutter analyze` | Sorun yok |
 | Mobil birim + widget testleri | `flutter test test/{format,models,widget}_test.dart` | **15/15 geçti** |
 | Mobil veri katmanı ↔ gerçek backend (seed verisi) | `flutter test test/integration` | **6/6 geçti** |
-| Mobil web derlemesi | `flutter build web` | Başarılı (Android/iOS derlemesi bu ortamda yapılamadı: Android SDK indirilemedi, Xcode yok) |
+| Mobil web derlemesi | `flutter build web` | Başarılı |
 
 Ek olarak mobil uygulamanın web derlemesi yerel backend'e bağlanıp keşif listesi, işletme detayı ve ürün araması
 ekran görüntüleriyle gözle kontrol edildi.
@@ -38,7 +38,7 @@ ekran görüntüleriyle gözle kontrol edildi.
 | 12 | Gece yarısını geçen saatler | Backend: aynı gün, taşma, tam gün, saat dilimi, istisna günleri |
 | 13 | Hata, boş veri, bağlantı kesintisi | E2E (ağ kesintisi + tekrar dene, bulunamayan menü), mobil widget testleri (hata/boş/tekrar dene), web/mobil boş durumlar |
 
-## Test edilmeyenler (dürüst not)
-- Gerçek Google Maps görünümü ve işaretçi kümeleme (anahtar yok; kod `MapService` arkasında, derleniyor).
-- Gerçek AI sağlayıcı çağrısı (anahtar yok). Doğrulama/normalizasyon, sınırlar, “yapılandırılmamış” yanıtı ve onay RPC'si test edildi.
-- Android/iOS cihazda çalıştırma (SDK yok). Konum izni akışı yalnızca kod düzeyinde.
+## Henüz test edilmeyenler
+- Gerçek Google Maps görünümü ve işaretçi kümeleme (API anahtarı gerekir; kod `MapService` arkasında ve derleniyor).
+- Gerçek AI sağlayıcı çağrısı (API anahtarı gerekir). Doğrulama, sınırlar, “yapılandırılmamış” yanıtı ve onay adımı test edildi.
+- Android/iOS cihazda veya emülatörde çalıştırma ve APK/IPA derlemesi. Konum izni akışı yalnızca kod düzeyinde incelendi.

@@ -51,8 +51,8 @@ Yerelde e-postalar Mailpit'e düşer (`http://localhost:54324`).
 | Konu | Durum | Etkisi |
 |---|---|---|
 | Google Maps API anahtarları (Android/iOS) | Yok | Mobil harita yerine açık mesaj + liste görünümü çalışır |
-| AI sağlayıcı anahtarı (`ANTHROPIC_API_KEY`) | Yok | “AI ile aktar” sekmesi “yapılandırılmamış” der; manuel menü tam çalışır. Gerçek sağlayıcı çağrısı bu ortamda **çalıştırılmadı/test edilmedi** |
-| Üretim Supabase projesi ve SMTP | Yok | Yalnızca yerel yığında doğrulandı |
+| AI sağlayıcı anahtarı (`ANTHROPIC_API_KEY`) | Yok | “AI ile aktar” sekmesi “yapılandırılmamış” der; manuel menü tam çalışır. Gerçek sağlayıcı çağrısı henüz test edilmedi |
+| Üretim Supabase projesi ve SMTP | Yok | Uygulama şimdilik yalnızca yerelde çalıştırılıyor |
 | Kalıcı QR alan adı (`VITE_PUBLIC_MENU_BASE_URL`) | Yok | Yerelde panel adresi kullanılır |
-| Android SDK / Xcode | Bu ortamda yok | APK/IPA derlenmedi; Flutter analiz, testler ve web derlemesi yapıldı |
+| Mobil mağaza sürümü | Hazırlanmadı | APK/IPA derlenip cihazda denenmedi; uygulama kimliği, imzalama ve ikonlar ayarlanmalı |
 | Mobil derin bağlantı (QR URL'sinin uygulamada açılması) | Yapılandırılmadı | Uygulamada `/m/:publicId` rotası hazır; Android App Links / iOS Universal Links için alan adı doğrulama dosyaları gerekir |
